@@ -40,6 +40,8 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
                 if (xhr.status==200) {
                     //XXX: parse some JSON from the request!
                     //XXX: Pass the data to the callback!
+                    var data = JSON.parse(this.responseText)
+                    callback(data);
                 }
             } 
             catch(e) {
@@ -50,6 +52,10 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
     //XXX: POST to a URL
     //XXX: set the mimetype and the accept headers!
     // Remember to use application/json !
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.send(JSON.stringify(objects));
 }
 
 
@@ -58,15 +64,17 @@ world = {};
 //XXX: TODO Make this prettier!
 function drawCircle(context,entity) {
     with(context) {
-        beginPath();              
+        beginPath();     
+        globalAlpha = 0.1;
         lineWidth = 3;
         var x = entity["x"];
         var y = entity["y"];
         //moveTo(x,y);
         fillStyle = entity["colour"];
         strokeStyle = fillStyle;
-        arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
-        stroke();                                
+        arc(x, y, (entity["radius"])?entity["radius"]:20, 0, 2.0 * Math.PI, false);  
+        fill()
+        // stroke();                                
     }
 }
 
@@ -75,7 +83,7 @@ function prepEntity(entity) {
         entity["colour"] = "#FF0000";
     }
     if (!entity["radius"]) {
-        entity["radius"] = 50;
+        entity["radius"] = 20;
     }
     return entity;
 }
@@ -134,11 +142,16 @@ function getPosition(e) {
 }
 
 
+function callback(data) {
+    // world[entity] = data;
+    drawNextFrame();
+}
+
 function addEntity(entity, data) {
     world[entity] = data;
-    drawNextFrame(); // (but should we?)
+    // drawNextFrame(); // (but should we?)
     //XXX: Send a XHTML Request that updates the entity you just  modified!
-
+    sendJSONXMLHTTPRequest("/entity/" + entity, world[entity], callback)
 }
 
 var counter = 0;
@@ -244,24 +257,49 @@ mouse = (function() {
     return self;
 })();
 
+function getColor(x, y) {
+    if (x < W/3 && y < H/2) return "red";
+    else if (x >= W/3 && x < 2*W/3 && y < H/2) return "green";
+    else if (x >= 2*W/3 && y < H/2) return "blue";
+    if (x < W/3 && y >= H/2) return "Cyan";
+    else if (x >= W/3 && x < 2*W/3 && y >= H/2) return "Magenta";
+    else if (x >= 2*W/3 && y >= H/2) return "Yellow";
+}
+
 // Add the application specific mouse listeners!
 //XXX: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+    addEntityWithoutName({'x':x,'y':y,'colour':getColor(x, y)});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+    addEntityWithoutName({'x':x,'y':y,'colour':getColor(x, y)});
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green',
+    addEntityWithoutName({'x':x,'y':y,'colour':getColor(x, y),
                           'radius':10});
 });
 
 
 function update() {
     //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+       if (xhr.readyState==4) {
+            try {
+                if (xhr.status==200) {
+                    world = JSON.parse(this.responseText);
+                    drawNextFrame();
+                }
+            } 
+            catch(e) {
+                alert('Error: ' + e.name);
+            }
+        }
+    };
+    xhr.open("GET", "/world", true);
+    xhr.send();
     drawFrame();
 }
 
