@@ -91,8 +91,10 @@ class ServerTestCase(unittest.TestCase):
         newworld = json.loads(utf8(r.data))
         for key in self.world:
             self.assertTrue(self.world[key]  == newworld[key], "Key %s" % key)
-
-
+        
+        # my own test case for post request to /world
+        # r = self.app.post('/world', data=json.dumps(dict()))
+        # self.assertTrue(len(json.loads(utf8(r.data)).keys()) == 0, "post to world failed")
         
         
         
