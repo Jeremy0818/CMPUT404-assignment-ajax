@@ -300,8 +300,8 @@ function update() {
         .then((updates) => {
             for (var entity in updates) {
                 world[entity] = updates[entity];
+                drawNextFrame();
             }
-            drawNextFrame();
         });
     drawFrame();
 }
