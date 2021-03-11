@@ -261,12 +261,14 @@ mouse = (function() {
 })();
 
 function getColor(x, y) {
-    if (x < W/3 && y < H/2) return "red";
-    else if (x >= W/3 && x < 2*W/3 && y < H/2) return "green";
-    else if (x >= 2*W/3 && y < H/2) return "blue";
-    if (x < W/3 && y >= H/2) return "Cyan";
-    else if (x >= W/3 && x < 2*W/3 && y >= H/2) return "Magenta";
-    else if (x >= 2*W/3 && y >= H/2) return "Yellow";
+    if (x < W/4 && y < H/2) return "red";
+    else if (x >= W/4 && x < 2*W/4 && y < H/2) return "orange";
+    else if (x >= W/4 && x < 3*W/4 && y < H/2) return "Yellow";
+    else if (x >= 3*W/4 && y < H/2) return "green";
+    if (x < W/3 && y >= H/2) return "purple";
+    else if (x >= W/4 && x < 2*W/4 && y >= H/2) return "Magenta";
+    else if (x >= W/4 && x < 3*W/4 && y >= H/2) return "blue";
+    else if (x >= 3*W/4 && y >= H/2) return "Cyan";
 }
 
 // Add the application specific mouse listeners!
