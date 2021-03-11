@@ -128,8 +128,13 @@ def add_listener(id):
 
 @app.route("/listener/<id>")    
 def get_listener(id):
-    v = myWorld.get_listener(id)
-    myWorld.clear_listener(id)
+    try:
+        v = myWorld.get_listener(id)
+        myWorld.clear_listener(id)
+    except BaseException as e:
+        print("register" + id + "as new listener!")
+        myWorld.add_listener( id )
+        return flask.jsonify(myWorld.world())
     return flask.jsonify( v )
 
 if __name__ == "__main__":
