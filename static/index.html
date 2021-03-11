@@ -154,7 +154,7 @@ function addEntity(entity, data) {
     // world[entity] = data;
     // drawNextFrame(); // (but should we?)
     //XXX: Send a XHTML Request that updates the entity you just  modified!
-    sendJSONXMLHTTPRequest("http://"+host+"/entity/" + entity, data, callback)
+    sendJSONXMLHTTPRequest("/entity/" + entity, data, callback)
 }
 
 var counter = 0;
@@ -287,7 +287,7 @@ mouse.mousedraggers.push(function(x,y,clicked,e) {
 
 function update() {
     //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
-    var res = fetch("http://"+host+"/listener/"+id,
+    var res = fetch("/listener/"+id,
         {
             method: 'GET', // *GET, POST, PUT, DELETE, etc.
             headers: {
@@ -307,7 +307,7 @@ function update() {
 // https://github.com/uofa-cmput404/cmput404-slides/tree/master/examples/ObserverExampleAJAX
 // register as a listener
 function register(id) {
-    const res = fetch("http://"+host+"/listener/"+id,
+    const res = fetch("/listener/"+id,
         {
             method: 'PUT', // *GET, POST, PUT, DELETE, etc.
             headers: {
