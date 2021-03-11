@@ -31,6 +31,8 @@ var context = canvas.getContext("2d");
 var W = canvas.width  = window.innerWidth-6;
 var H = canvas.height = window.innerHeight-50;
 const id = "L"+Math.floor(20000000*Math.random());
+const protocol = window.location.protocol;
+const host = window.location.host;
 
 
 function sendJSONXMLHTTPRequest(url, objects, callback) {
@@ -154,7 +156,7 @@ function addEntity(entity, data) {
     // world[entity] = data;
     // drawNextFrame(); // (but should we?)
     //XXX: Send a XHTML Request that updates the entity you just  modified!
-    sendJSONXMLHTTPRequest("/entity/" + entity, data, callback)
+    sendJSONXMLHTTPRequest(protocol+"://"+host+"/entity/" + entity, data, callback)
 }
 
 var counter = 0;
@@ -304,7 +306,7 @@ function update() {
             }
         }
     };
-    xhr.open("GET", "/listener/"+id, true);
+    xhr.open("GET", protocol+"://"+host+"/listener/"+id, true);
     xhr.send();
     drawFrame();
 }
@@ -326,7 +328,7 @@ function register(id) {
             }
         }
     };
-    xhr.open("POST", "/listener/"+id, true);
+    xhr.open("POST", protocol+"://"+host+"/listener/"+id, true);
     xhr.send();
 }
 
