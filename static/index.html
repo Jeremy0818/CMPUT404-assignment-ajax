@@ -26,7 +26,6 @@
     <canvas id="c" width="100%" height="100%" style="-webkit-tap-highlight-color: transparent;"></canvas> 
     <script>
 var canvas = document.getElementById('c');
-const protocol = window.location.protocol;
 var host = window.location.host;
 var context = canvas.getContext("2d");
 var W = canvas.width  = window.innerWidth-6;
@@ -155,7 +154,7 @@ function addEntity(entity, data) {
     // world[entity] = data;
     // drawNextFrame(); // (but should we?)
     //XXX: Send a XHTML Request that updates the entity you just  modified!
-    sendJSONXMLHTTPRequest(protocol+"://"+host+"/entity/" + entity, data, callback)
+    sendJSONXMLHTTPRequest("http://"+host+"/entity/" + entity, data, callback)
 }
 
 var counter = 0;
@@ -288,47 +287,39 @@ mouse.mousedraggers.push(function(x,y,clicked,e) {
 
 function update() {
     //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
-       if (xhr.readyState==4) {
-            try {
-                if (xhr.status==200) {
-                    updates = JSON.parse(this.responseText);
-                    for (var entity in updates) {
-                        world[entity] = updates[entity];
-                    }
-                    drawNextFrame();
-                }
-            } 
-            catch(e) {
-                alert('Error: ' + e.name);
+    var res = fetch("http://"+host+"/listener/"+id,
+        {
+            method: 'GET', // *GET, POST, PUT, DELETE, etc.
+            headers: {
+            'Content-Type': 'application/json',
+            },
+        })
+        .then(res => res.json())
+        .then((updates) => {
+            for (var entity in updates) {
+                console.log(entity);
+                world[entity] = updates[entity];
             }
-        }
-    };
-    xhr.open("GET", protocol+"://"+host+"/listener/"+id, true);
-    xhr.send();
+            drawNextFrame();
+        });
     drawFrame();
 }
 
 // https://github.com/uofa-cmput404/cmput404-slides/tree/master/examples/ObserverExampleAJAX
 // register as a listener
 function register(id) {
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
-       if (xhr.readyState==4) {
-            try {
-                if (xhr.status==200) {
-                    curWorld = JSON.parse(this.responseText);
-                    world = curWorld;
-                }
-            } 
-            catch(e) {
-                alert('Error: ' + e.name);
-            }
-        }
-    };
-    xhr.open("POST", protocol+"://"+host+"/listener/"+id, true);
-    xhr.send();
+    var res = fetch("http://"+host+"/listener/"+id,
+        {
+            method: 'PUT', // *GET, POST, PUT, DELETE, etc.
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({}) // body data type must match "Content-Type" header
+        })
+        .then(res => res.json())
+        .then((curWorld) => {
+            world = curWorld;
+        });
 }
 
 // register as a listener
