@@ -297,7 +297,6 @@ function update() {
         .then(res => res.json())
         .then((updates) => {
             for (var entity in updates) {
-                console.log(entity);
                 world[entity] = updates[entity];
             }
             drawNextFrame();
@@ -308,7 +307,7 @@ function update() {
 // https://github.com/uofa-cmput404/cmput404-slides/tree/master/examples/ObserverExampleAJAX
 // register as a listener
 function register(id) {
-    var res = fetch("http://"+host+"/listener/"+id,
+    const res = fetch("http://"+host+"/listener/"+id,
         {
             method: 'PUT', // *GET, POST, PUT, DELETE, etc.
             headers: {
