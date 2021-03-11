@@ -30,6 +30,7 @@ var host = window.location.host;
 var context = canvas.getContext("2d");
 var W = canvas.width  = window.innerWidth-6;
 var H = canvas.height = window.innerHeight-50;
+const id = "L"+Math.floor(20000000*Math.random());
 
 
 function sendJSONXMLHTTPRequest(url, objects, callback) {
@@ -143,15 +144,17 @@ function getPosition(e) {
 
 
 function callback(data) {
-    // world[entity] = data;
+    var name = "X"+(counter)%100;
+    world[name] = data;
     drawNextFrame();
 }
 
 function addEntity(entity, data) {
-    world[entity] = data;
+
+    // world[entity] = data;
     // drawNextFrame(); // (but should we?)
     //XXX: Send a XHTML Request that updates the entity you just  modified!
-    sendJSONXMLHTTPRequest("/entity/" + entity, world[entity], callback)
+    sendJSONXMLHTTPRequest("/entity/" + entity, data, callback)
 }
 
 var counter = 0;
@@ -289,7 +292,10 @@ function update() {
        if (xhr.readyState==4) {
             try {
                 if (xhr.status==200) {
-                    world = JSON.parse(this.responseText);
+                    updates = JSON.parse(this.responseText);
+                    for (var entity in updates) {
+                        world[entity] = updates[entity];
+                    }
                     drawNextFrame();
                 }
             } 
@@ -298,10 +304,34 @@ function update() {
             }
         }
     };
-    xhr.open("GET", "/world", true);
+    xhr.open("GET", "/listener/"+id, true);
     xhr.send();
     drawFrame();
 }
+
+// https://github.com/uofa-cmput404/cmput404-slides/tree/master/examples/ObserverExampleAJAX
+// register as a listener
+function register(id) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function() {
+       if (xhr.readyState==4) {
+            try {
+                if (xhr.status==200) {
+                    // do nothing
+                }
+            } 
+            catch(e) {
+                alert('Error: ' + e.name);
+            }
+        }
+    };
+    xhr.open("POST", "/listener/"+id, true);
+    xhr.send();
+}
+
+// register as a listener
+register(id);
+console.log("registered as: " + id);
 
 // 30 frames per second
 setInterval( update, 1000/30.0);

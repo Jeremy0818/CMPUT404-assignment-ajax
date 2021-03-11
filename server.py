@@ -44,15 +44,30 @@ class World:
 
     def set(self, entity, data):
         self.space[entity] = data
+        self.notify_all(entity,data)
 
     def clear(self):
         self.space = dict()
+        self.listeners = dict()
 
     def get(self, entity):
         return self.space.get(entity,dict())
     
     def world(self):
         return self.space
+
+    def notify_all(self,entity,data):
+        for listener in self.listeners:
+           self.listeners[listener][entity] = data
+
+    def add_listener(self,listener_name):
+        self.listeners[listener_name] = dict()
+
+    def get_listener(self, listener_name):
+        return self.listeners[listener_name]
+
+    def clear_listener(self, listener_name):
+        self.listeners[listener_name] = dict()
 
 # you can test your webservice from the commandline
 # curl -v   -H "Content-Type: application/json" -X PUT http://127.0.0.1:5000/entity/X -d '{"x":1,"y":1}' 
@@ -104,6 +119,18 @@ def clear():
     '''Clear the world out!'''
     myWorld.clear()
     return myWorld.world()
+
+# https://github.com/uofa-cmput404/cmput404-slides/tree/master/examples/ObserverExampleAJAX
+@app.route("/listener/<id>", methods=['POST','PUT'])
+def add_listener(id):
+    myWorld.add_listener( id )
+    return flask.jsonify(dict())
+
+@app.route("/listener/<id>")    
+def get_listener(id):
+    v = myWorld.get_listener(id)
+    myWorld.clear_listener(id)
+    return flask.jsonify( v )
 
 if __name__ == "__main__":
     app.run()
