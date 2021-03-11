@@ -317,7 +317,8 @@ function register(id) {
        if (xhr.readyState==4) {
             try {
                 if (xhr.status==200) {
-                    // do nothing
+                    curWorld = JSON.parse(this.responseText);
+                    world = curWorld;
                 }
             } 
             catch(e) {
