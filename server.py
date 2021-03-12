@@ -58,10 +58,11 @@ class World:
 
     def notify_all(self,entity,data):
         for listener in self.listeners:
-           self.listeners[listener][entity] = data
+            self.listeners[listener][entity] = data
 
     def add_listener(self,listener_name):
         self.listeners[listener_name] = dict()
+        self.listeners[listener_name]["refresh"] = dict()
 
     def get_listener(self, listener_name):
         return self.listeners[listener_name]

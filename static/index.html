@@ -287,6 +287,20 @@ mouse.mousedraggers.push(function(x,y,clicked,e) {
                           'radius':10});
 });
 
+function getWorld() {
+    var res = fetch("/world",
+        {
+            method: 'GET', // *GET, POST, PUT, DELETE, etc.
+            headers: {
+            'Content-Type': 'application/json',
+            },
+        })
+        .then(res => res.json())
+        .then((newWorld) => {
+            world = newWorld;
+        });
+}
+
 
 function update() {
     //XXX: TODO Get the world from the webservice using a XMLHTTPRequest
@@ -299,12 +313,20 @@ function update() {
         })
         .then(res => res.json())
         .then((updates) => {
-            for (var entity in updates) {
-                world[entity] = updates[entity];
+            if (updates.hasOwnProperty("refresh")) {
+                console.log("here");
+                world = getWorld();
+                counter = 0;
                 drawNextFrame();
-                counter++;
-                newCounter = 0;
+            } else {
+                for (var entity in updates) {
+                    world[entity] = updates[entity];
+                    drawNextFrame();
+                    counter++;
+                    newCounter = 0;
+                }
             }
+            
         });
     drawFrame();
 }
