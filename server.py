@@ -125,7 +125,7 @@ def clear():
 @app.route("/listener/<id>", methods=['POST','PUT'])
 def add_listener(id):
     myWorld.add_listener( id )
-    return flask.jsonify(dict())
+    return flask.jsonify(myWorld.world())
 
 @app.route("/listener/<id>")    
 def get_listener(id):
